@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bac II Pro Dashboard</title>
+    <style>
+        /* iOS-Inspired Professional Variables */
+        :root {
+            --bg-body: #F2F2F7;
+            --bg-surface: #FFFFFF;
+            --text-main: #000000;
+            --text-muted: #8A8A8E;
+            --primary: #007AFF;
+            --primary-bg: #E5F1FF;
+            --border: #E5E5EA;
+            --success-bg: #E8F8F0;
+            --success-text: #34C759;
+            --danger-bg: #FFECEB;
+            --danger-text: #FF3B30;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding: 20px 16px 40px 16px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 500px; /* Optimized for mobile/tablet */
+            margin: 0 auto;
+        }
+
+        /* Clean Header */
+        header {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        header p {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* iOS Segmented Controls */
+        .tabs {
+            display: flex;
+            background: #E3E3E8;
+            padding: 3px;
+            border-radius: 9px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 8px 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--bg-surface);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12), 0 3px 1px rgba(0,0,0,0.04);
+        }
+
+        /* Surface Panels (The "Boxes") */
+        .panel {
+            display: none;
+            background: var(--bg-surface);
+            padding: 20px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+        }
+
+        .panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -0.3px;
+        }
+
+        /* Subject List (Replaced Table for Mobile) */
+        .subject-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .subject-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .subject-card:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .subj-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .subj-name {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .subj-max {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .subj-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        /* Inputs */
+        input[type="number"] {
+            width: 72px;
+            padding: 8px;
+            text-align: right;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px; /* 16px prevents iOS auto-zoom */
+            font-weight: 600;
+            background: var(--bg-body);
+            transition: 0.2s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-surface);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+        }
+
+        /* Badges */
+        .badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge-success { background: var(--success-bg); color: var(--success-text); }
+        .badge-danger { background: var(--danger-bg); color: var(--danger-text); }
+        .badge-empty { background: var(--bg-body); color: var(--text-muted); }
+
+        /* KPI Dashboard */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            background: var(--bg-body);
+            padding: 16px;
+            border-radius: var(--radius-md);
+        }
+
+        .kpi-card {
+            text-align: center;
+        }
+
+        .kpi-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .kpi-value {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        #final-grade { transition: color 0.3s; }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--bg-body);
+            appearance: none;
+            outline: none;
+            font-weight: 500;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+
+        /* Planner Output */
+        .alloc-container {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .alloc-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-surface);
+            font-size: 14px;
+        }
+
+        .alloc-item:last-child { border-bottom: none; }
+        .alloc-name { font-weight: 600; }
+        .alloc-time { font-weight: 700; color: var(--primary); }
+        .focus-tag { font-size: 11px; background: var(--primary-bg); color: var(--primary); padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
+
+        /* iOS Toggle Switches for Discipline */
+        .rule-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .rule-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            gap: 16px;
+        }
+
+        .rule-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+        .rule-text {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .rule-text strong {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        /* Toggle Switch CSS */
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 30px;
+            flex-shrink: 0;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #E9E9EA;
+            transition: .3s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .slider { background-color: var(--success-text); }
+        input:checked + .slider:before { transform: translateX(20px); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>Baccalaureate Pro</h1>
+        <p>Social Science • Class of 2024</p>
+    </header>
+
+    <!-- Navigation -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(0)">Calculator</button>
+        <button class="tab-btn" onclick="switchTab(1)">Planner</button>
+        <button class="tab-btn" onclick="switchTab(2)">Discipline</button>
+    </div>
+
+    <!-- TAB 1: CALCULATOR -->
+    <div id="panel-0" class="panel active">
+        <h2>Performance Tracker</h2>
+
+        <div class="subject-list" id="calc-rows">
+            <!-- JavaScript will populate the rows here -->
+        </div>
+
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Cumulative</div>
+                <div class="kpi-value" id="total-score">0 / 550</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Accuracy</div>
+                <div class="kpi-value" id="total-percent">0.0%</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Projection</div>
+                <div class="kpi-value" id="final-grade">F</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: PLANNER -->
+    <div id="panel-1" class="panel">
+        <h2>Time Allocation</h2>
+
+        <div class="form-group">
+            <div class="form-header">
+                <label>Daily Capacity</label>
+                <span id="hours-label" style="font-weight: 700; color: var(--primary);">8.0 Hrs</span>
+            </div>
+            <input type="range" id="daily-hours" min="4" max="14" value="8" step="0.5" oninput="calculateSchedule()">
+        </div>
+
+        <div class="form-group">
+            <label style="display:block; margin-bottom:12px;">Primary Focus (Weakest Area)</label>
+            <select id="weak-subject" onchange="calculateSchedule()">
+                <option value="Khmer Literature">Khmer Literature</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="History">History</option>
+                <option value="Geography">Geography</option>
+                <option value="Morals / Civics">Morals / Civics</option>
+                <option value="Earth & Environment">Earth & Environment</option>
+            </select>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <label style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; margin-bottom: 8px; display:block;">Optimized Schedule</label>
+            <div id="allocation-output" class="alloc-container"></div>
+        </div>
+    </div>
+
+    <!-- TAB 3: DISCIPLINE -->
+    <div id="panel-2" class="panel">
+        <h2>Accountability Log</h2>
+        <p class="rule-desc">Check these parameters daily to build momentum. Progress is cached locally.</p>
+
+        <div class="rule-row">
+            <div class="rule-text"><strong>Rule 1</strong> Achieved minimum scheduled study hours.</div>
+            <label class="toggle"><input type="checkbox" id="rule1" onclick="saveRules()"><span class="slider"></span></label>
+        </div>
+        <div class="rule-row">
+            <div class="rule-text"><strong>Rule 2</strong> Maintained active recall (no passive reading).</div>
+            <label class="toggle"><input type="checkbox" id="rule2" onclick="saveRules()"><span class="slider"></span></label>
+        </div>
+        <div class="rule-row">
+            <div class="rule-text"><strong>Rule 3</strong> Strictly adhered to the 15-min limit per problem.</div>
+            <label class="toggle"><input type="checkbox" id="rule3" onclick="saveRules()"><span class="slider"></span></label>
+        </div>
+        <div class="rule-row">
+            <div class="rule-text"><strong>Rule 4</strong> Enforced complete lockout of social media.</div>
+            <label class="toggle"><input type="checkbox" id="rule4" onclick="saveRules()"><span class="slider"></span></label>
+        </div>
+        <div class="rule-row">
+            <div class="rule-text"><strong>Rule 5</strong> Secured 7.5+ hours of restorative sleep.</div>
+            <label class="toggle"><input type="checkbox" id="rule5" onclick="saveRules()"><span class="slider"></span></label>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Data Model
+    const subjects = [
+        { name: 'Khmer Literature', max: 125, score: '' },
+        { name: 'Mathematics', max: 75, score: '' },
+        { name: 'Earth & Env.', max: 75, score: '' },
+        { name: 'History', max: 75, score: '' },
+        { name: 'Geography', max: 75, score: '' },
+        { name: 'Morals / Civics', max: 75, score: '' },
+        { name: 'Foreign Language', max: 50, score: '' }
+    ];
+
+    // Navigation (iOS Style Tabs)
+    function switchTab(tabIndex) {
+        document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+            btn.classList.toggle('active', idx === tabIndex);
+        });
+        document.querySelectorAll('.panel').forEach((panel, idx) => {
+            panel.classList.toggle('active', idx === tabIndex);
+        });
+    }
+
+    // Calculator Engine
+    function setupCalculator() {
+        const parent = document.getElementById('calc-rows');
+        parent.innerHTML = '';
+        subjects.forEach((item, idx) => {
+            const row = document.createElement('div');
+            row.className = 'subject-card';
+            row.innerHTML = `
+                <div class="subj-info">
+                    <div class="subj-name">${item.name}</div>
+                    <div class="subj-max">Max Score: ${item.max}</div>
+                </div>
+                <div class="subj-actions">
+                    <input type="number" placeholder="—" min="0" max="${item.max}" value="${item.score}" oninput="processScore(${idx}, this.value)">
+                    <div id="stat-${idx}"><span class="badge badge-empty">No Data</span></div>
+                </div>
+            `;
+            parent.appendChild(row);
+        });
+    }
+
+    function processScore(idx, value) {
+        let val = parseFloat(value);
+        if (isNaN(val)) val = '';
+        if (val > subjects[idx].max) val = subjects[idx].max;
+        if (val < 0) val = 0;
+
+        subjects[idx].score = val;
+
+        const pct = val !== '' ? (val / subjects[idx].max) * 100 : 0;
+        const statBox = document.getElementById(`stat-${idx}`);
+
+        if (value === '') {
+            statBox.innerHTML = '<span class="badge badge-empty">No Data</span>';
+        } else if (pct >= 90) {
+            statBox.innerHTML = '<span class="badge badge-success">On Track</span>';
+        } else {
+            statBox.innerHTML = '<span class="badge badge-danger">Review</span>';
+        }
+
+        rebuildGlobalScore();
+    }
+
+    function rebuildGlobalScore() {
+        let runningTotal = 0;
+        subjects.forEach(s => runningTotal += (s.score === '' ? 0 : s.score));
+
+        const overallPct = (runningTotal / 550) * 100;
+        document.getElementById('total-score').textContent = Math.round(runningTotal) + " / 550";
+        document.getElementById('total-percent').textContent = overallPct.toFixed(1) + "%";
+
+        let grade = 'F';
+        let color = 'var(--text-main)';
+
+        if (runningTotal >= 495) { grade = 'A'; color = '#34C759'; }
+        else if (runningTotal >= 440) { grade = 'B'; color = '#007AFF'; }
+        else if (runningTotal >= 385) { grade = 'C'; color = '#FF9500'; }
+        else if (runningTotal >= 330) { grade = 'D'; color = '#FF9500'; }
+        else if (runningTotal >= 275) { grade = 'E'; color = '#8A8A8E'; }
+        else { grade = 'F'; color = '#FF3B30'; }
+
+        const finalEl = document.getElementById('final-grade');
+        finalEl.textContent = grade;
+        finalEl.style.color = color;
+    }
+
+    // Schedule Engine
+    function calculateSchedule() {
+        const totalHours = parseFloat(document.getElementById('daily-hours').value);
+        // Format to 1 decimal place (e.g., "8.0")
+        document.getElementById('hours-label').textContent = totalHours.toFixed(1) + " Hrs";
+
+        const weakSubj = document.getElementById('weak-subject').value;
+        const output = document.getElementById('allocation-output');
+        output.innerHTML = '';
+
+        subjects.forEach(s => {
+            let allocation = 0;
+            // Handle naming differences between select and array
+            let searchName = s.name === 'Earth & Env.' ? 'Earth & Environment' : s.name;
+
+            if (searchName === weakSubj) {
+                allocation = totalHours * 0.35;
+            } else if (searchName === 'Foreign Language') {
+                allocation = totalHours * 0.09;
+            } else {
+                allocation = (totalHours * 0.56) / 5;
+            }
+
+            const item = document.createElement('div');
+            item.className = "alloc-item";
+
+            // Formatting time
+            const hours = Math.floor(allocation);
+            const minutes = Math.round((allocation - hours) * 60);
+            const timeStr = hours > 0 ? 
+                `${hours}h ${minutes > 0 ? minutes + 'm' : ''}` : 
+                `${minutes}m`;
+
+            item.innerHTML = `
+                <div class="alloc-name">
+                    ${s.name} ${searchName === weakSubj ? '<span class="focus-tag">FOCUS</span>' : ''}
+                </div>
+                <div class="alloc-time">${timeStr}</div>
+            `;
+            output.appendChild(item);
+        });
+    }
+
+    // Storage Engine (Accountability)
+    function saveRules() {
+        for (let i = 1; i <= 5; i++) {
+            localStorage.setItem(`bac2_pro_rule_${i}`, document.getElementById(`rule${i}`).checked);
+        }
+    }
+
+    function loadRules() {
+        for (let i = 1; i <= 5; i++) {
+            const savedState = localStorage.getItem(`bac2_pro_rule_${i}`);
+            if (savedState === "true") document.getElementById(`rule${i}`).checked = true;
+        }
+    }
+
+    // Initialize
+    setupCalculator();
+    calculateSchedule();
+    loadRules();
+</script>
+</body>
+</html>
